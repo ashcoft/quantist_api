@@ -1644,8 +1644,13 @@ class WhaleRadar():
 
 		radar_indicators = pd.DataFrame()
 		
+		# Radar data subset
+		startdate_ts = pd.to_datetime(self.startdate)
+		radar_data_nval = selected_broker_nval[selected_broker_nval.index.get_level_values('date') >= startdate_ts]
+		radar_data_full = raw_data_full[raw_data_full.index.get_level_values('date') >= startdate_ts]
+
 		# Y Axis: WMF
-		radar_indicators["mf"] = selected_broker_nval.groupby("code").sum()
+		radar_indicators["mf"] = radar_data_nval.groupby("code").sum()
 
 		# X Axis:
 		if y_axis_type == dp.ListRadarType.correlation:
@@ -1654,9 +1659,9 @@ class WhaleRadar():
 				.corrwith(raw_data_full['close'].groupby('code').diff(),axis=0) # type: ignore
 		elif y_axis_type == dp.ListRadarType.changepercentage:
 			radar_indicators[y_axis_type.value] = \
-				(raw_data_full.groupby('code')['close'].nth([-1]) \
-				-raw_data_full.groupby('code')['close'].nth([0])) \
-				/raw_data_full.groupby('code')['close'].nth([0])
+				(radar_data_full.groupby('code')['close'].nth([-1]) \
+				-radar_data_full.groupby('code')['close'].nth([0])) \
+				/radar_data_full.groupby('code')['close'].nth([0])
 		else:
 			raise ValueError("Not a valid radar type")
 
