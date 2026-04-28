@@ -582,9 +582,9 @@ class ForeignRadar():
 				
 		elif y_axis_type == dp.ListRadarType.changepercentage:
 			radar_indicators[y_axis_type] = \
-				(radar_data.groupby(by='code')['close'].nth([-1])- \
-				radar_data.groupby(by='code')['close'].nth([0]))/ \
-				radar_data.groupby(by='code')['close'].nth([0])
+				(radar_data.groupby(by='code')['close'].last()- \
+				radar_data.groupby(by='code')['close'].first())/ \
+				radar_data.groupby(by='code')['close'].first()
 		else:
 			raise ValueError("Not a valid radar type")
 		
