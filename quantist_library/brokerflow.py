@@ -1675,8 +1675,10 @@ class WhaleRadar():
 		# X Axis:
 		if y_axis_type == dp.ListRadarType.correlation:
 			selected_broker_nval_cumsum = selected_broker_nval.astype(float).groupby(level='code').cumsum()
-			radar_indicators[y_axis_type.value] = selected_broker_nval_cumsum.groupby('code').diff().groupby('code')\
-				.corrwith(raw_data_full['close'].groupby('code').diff(),axis=0) # type: ignore
+			nval_diff = selected_broker_nval_cumsum.groupby('code').diff()
+			close_diff = raw_data_full['close'].groupby('code').diff()
+			radar_indicators[y_axis_type.value] = nval_diff[nval_diff.index.get_level_values('date') > startdate_ts].groupby('code')\
+				.corrwith(close_diff[close_diff.index.get_level_values('date') > startdate_ts],axis=0) # type: ignore
 		elif y_axis_type == dp.ListRadarType.changepercentage:
 			radar_indicators[y_axis_type.value] = \
 				(radar_data_full.groupby('code')['close'].last() \
