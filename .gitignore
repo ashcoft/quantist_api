@@ -8,3 +8,5 @@ node_modules
 temp
 .env
 .git
+.agent/dist/
+.agent/node_modules/
